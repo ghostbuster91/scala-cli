@@ -73,8 +73,13 @@ final case class PublishParamsOptions(
   @HelpMessage("Use or setup publish parameters meant to be used on continuous integration")
   @Tag(tags.restricted)
   @Tag(tags.inShortHelp)
-    ci: Option[Boolean] = None
+    ci: Option[Boolean] = None,
 
+  @Group(HelpGroup.Publishing.toString)
+  @HelpMessage("Don't package scaladocs in the final artifact")
+  @Tag(tags.restricted)
+  @Tag(tags.inShortHelp)
+    skipScaladocs: Boolean = false
 ) {
   // format: on
 

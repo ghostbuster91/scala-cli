@@ -230,8 +230,12 @@ object Publish extends ScalaCommand[PublishOptions] with BuildCommandHelpers {
     ).orExit(logger)
     val threads = BuildThreads.create()
 
-    val compilerMaker    = options.shared.compilerMaker(threads)
-    val docCompilerMaker = options.shared.compilerMaker(threads, scaladoc = true)
+    val compilerMaker = options.shared.compilerMaker(threads)
+    val docCompilerMaker =
+      Option.when(!options.publishParams.skipScaladocs)(options.shared.compilerMaker(
+        threads,
+        scaladoc = true
+      ))
 
     val cross = options.compileCross.cross.getOrElse(false)
 
@@ -278,7 +282,7 @@ object Publish extends ScalaCommand[PublishOptions] with BuildCommandHelpers {
     logger: Logger,
     initialBuildOptions: BuildOptions,
     compilerMaker: ScalaCompilerMaker,
-    docCompilerMaker: ScalaCompilerMaker,
+    docCompilerMaker: Option[ScalaCompilerMaker],
     cross: Boolean,
     workingDir: => os.Path,
     ivy2HomeOpt: Option[os.Path],
@@ -299,7 +303,7 @@ object Publish extends ScalaCommand[PublishOptions] with BuildCommandHelpers {
         inputs,
         initialBuildOptions,
         compilerMaker,
-        Some(docCompilerMaker),
+        docCompilerMaker,
         logger,
         crossBuilds = cross,
         buildTests = false,
@@ -333,7 +337,7 @@ object Publish extends ScalaCommand[PublishOptions] with BuildCommandHelpers {
           inputs,
           initialBuildOptions,
           compilerMaker,
-          Some(docCompilerMaker),
+          docCompilerMaker,
           logger,
           crossBuilds = cross,
           buildTests = false,

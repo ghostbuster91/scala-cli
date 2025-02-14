@@ -51,8 +51,12 @@ object PublishLocal extends ScalaCommand[PublishLocalOptions] {
     ).orExit(logger)
     val threads = BuildThreads.create()
 
-    val compilerMaker    = options.shared.compilerMaker(threads)
-    val docCompilerMaker = options.shared.compilerMaker(threads, scaladoc = true)
+    val compilerMaker = options.shared.compilerMaker(threads)
+    val docCompilerMaker =
+      Option.when(!options.publishParams.skipScaladocs)(options.shared.compilerMaker(
+        threads,
+        scaladoc = true
+      ))
 
     val cross = options.compileCross.cross.getOrElse(false)
 
